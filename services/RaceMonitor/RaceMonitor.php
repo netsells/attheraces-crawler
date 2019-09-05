@@ -125,7 +125,7 @@ final class RaceMonitor
             $atrIndex = preg_replace(["/\s+/", "/\([^)]+\)/"], "", $parent[5]);
 
             //add data only if ATR Index is greater than 2000
-            if ($atrIndex > 100) {
+            if ($atrIndex > 2000) {
                 $formattedData[] = 'Race: ' . $race . '. ATR Index: ' . $atrIndex . '.';
             }
         }
