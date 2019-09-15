@@ -45,8 +45,6 @@ final class RaceMonitor
         return $this->getMessage();
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-
     /**
      * Validates email
      *
@@ -156,7 +154,7 @@ final class RaceMonitor
      *
      * @return string
      */
-    public function getMessage()
+    private function getMessage()
     {
         return $this->message;
     }
