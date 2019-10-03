@@ -154,7 +154,7 @@ final class RaceMonitor
      *
      * @return string
      */
-    private function getMessage()
+    public function getMessage()
     {
         return $this->message;
     }
