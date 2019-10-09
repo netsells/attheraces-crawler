@@ -20,11 +20,13 @@ final class RaceMonitor
     protected $email;
 
     private $message;
+    private $atrMaxNumber;
 
     public function __construct()
     {
         $this->email = config('races.email');
         $this->target = config('races.target-url');
+        $this->atrMaxNumber = config('atr-max-number');
     }
 
     /**
@@ -123,7 +125,7 @@ final class RaceMonitor
             $atrIndex = preg_replace(["/\s+/", "/\([^)]+\)/"], "", $parent[5]);
 
             //add data only if ATR Index is greater than 2000
-            if ($atrIndex > 2000) {
+            if ($atrIndex > $this->atrMaxNumber) {
                 $formattedData[] = 'Race: ' . $race . '. ATR Index: ' . $atrIndex . '.';
             }
         }
