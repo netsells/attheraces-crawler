@@ -26,7 +26,7 @@ final class RaceMonitor
     {
         $this->email = config('races.email');
         $this->target = config('races.target-url');
-        $this->atrMaxNumber = config('atr-max-number');
+        $this->atrMaxNumber = config('races.atr-max-number');
     }
 
     /**
