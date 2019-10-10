@@ -7,10 +7,12 @@
 
 namespace Services\RaceMonitor\RaceMonitor;
 
+use App\BlacklistedRace;
 use App\Exceptions\InvalidRaceEmailException;
 use App\Mail\RaceEmail;
 use DOMXPath;
 use DOMDocument;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 final class RaceMonitor
@@ -21,12 +23,17 @@ final class RaceMonitor
 
     private $message;
     private $atrMaxNumber;
+    private $blacklistPeriod;
 
     public function __construct()
     {
         $this->email = config('races.email');
         $this->target = config('races.target-url');
         $this->atrMaxNumber = config('races.atr-max-number');
+        $this->blacklistPeriod = config('races.blacklist-period');
+
+        //remove the blacklisted races after curtain amount of time
+        $this->unblacklist();
     }
 
     /**
@@ -124,9 +131,18 @@ final class RaceMonitor
             //remove spaces, tabs, new lines, parentheses and everything what's between them
             $atrIndex = preg_replace(["/\s+/", "/\([^)]+\)/"], "", $parent[5]);
 
-            //add data only if ATR Index is greater than 2000
+            //add data only if ATR Index is greater than 2000/ set the max atr index in .env
             if ($atrIndex > $this->atrMaxNumber) {
-                $formattedData[] = 'Race: ' . $race . '. ATR Index: ' . $atrIndex . '.';
+                $blacklistedRace = new BlacklistedRace();
+
+                if (!$blacklistedRace->where('race', '=', $race)->get()->count()) {
+                    //adding the race to the blacklist to prevent repetition
+                    $blacklistedRace->race = $race;
+                    $blacklistedRace->atr_index = $atrIndex;
+                    $blacklistedRace->save();
+
+                    $formattedData[] = 'Race: ' . $race . '. ATR Index: ' . $atrIndex . '.';
+                }
             }
         }
 
@@ -159,5 +175,17 @@ final class RaceMonitor
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     * Removes the races from te blacklist after curtain amount of time
+     */
+    private function unblacklist()
+    {
+        foreach ((new BlacklistedRace())->all() as $race) {
+            if($race->created_at < Carbon::now()->subHours($this->blacklistPeriod)){
+                $race->delete();
+            }
+        }
     }
 }

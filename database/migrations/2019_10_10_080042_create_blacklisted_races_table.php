@@ -16,7 +16,7 @@ class CreateBlacklistedRacesTable extends Migration
         Schema::create('blacklisted_races', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('race');
-            $table->string('atr_index');
+            $table->integer('atr_index');
             $table->timestamps();
         });
     }
