@@ -7,6 +7,7 @@
 
 namespace Services\RaceMonitor\RaceMonitor;
 
+use App\BlacklistedRace;
 use App\Exceptions\InvalidRaceEmailException;
 use App\Mail\RaceEmail;
 use DOMXPath;
@@ -124,9 +125,18 @@ final class RaceMonitor
             //remove spaces, tabs, new lines, parentheses and everything what's between them
             $atrIndex = preg_replace(["/\s+/", "/\([^)]+\)/"], "", $parent[5]);
 
-            //add data only if ATR Index is greater than 2000
+            //add data only if ATR Index is greater than 2000/ set the max atr index in .env
             if ($atrIndex > $this->atrMaxNumber) {
-                $formattedData[] = 'Race: ' . $race . '. ATR Index: ' . $atrIndex . '.';
+                $blacklistedRace = new BlacklistedRace();
+
+                if (!$blacklistedRace->where('race', '=', $race)->get()->count()) {
+                    //adding the race to the blacklist to prevent repetition
+                    $blacklistedRace->race = $race;
+                    $blacklistedRace->atr_index = $atrIndex;
+                    $blacklistedRace->save();
+
+                    $formattedData[] = 'Race: ' . $race . '. ATR Index: ' . $atrIndex . '.';
+                }
             }
         }
 
