@@ -12,7 +12,6 @@ use App\Exceptions\InvalidRaceEmailException;
 use App\Mail\RaceEmail;
 use DOMXPath;
 use DOMDocument;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 final class RaceMonitor
@@ -23,17 +22,12 @@ final class RaceMonitor
 
     private $message;
     private $atrMaxNumber;
-    private $blacklistPeriod;
 
     public function __construct()
     {
         $this->email = config('races.email');
         $this->target = config('races.target-url');
         $this->atrMaxNumber = config('races.atr-max-number');
-        $this->blacklistPeriod = config('races.blacklist-period');
-
-        //remove the blacklisted races after curtain amount of time
-        $this->unblacklist();
     }
 
     /**
@@ -175,17 +169,5 @@ final class RaceMonitor
     public function getMessage()
     {
         return $this->message;
-    }
-
-    /**
-     * Removes the races from te blacklist after curtain amount of time
-     */
-    private function unblacklist()
-    {
-        foreach ((new BlacklistedRace())->all() as $race) {
-            if($race->created_at < Carbon::now()->subHours($this->blacklistPeriod)){
-                $race->delete();
-            }
-        }
     }
 }
