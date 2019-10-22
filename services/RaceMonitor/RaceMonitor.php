@@ -25,7 +25,7 @@ final class RaceMonitor
 
     public function __construct()
     {
-        $this->email = config('races.email');
+        $this->emails = config('races.emails');
         $this->target = config('races.target-url');
         $this->atrMaxNumber = config('races.atr-max-number');
     }
@@ -56,8 +56,10 @@ final class RaceMonitor
      */
     private function validateEmail()
     {
-        if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidRaceEmailException();
+        foreach (explode(',', $this->emails) as $email) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new InvalidRaceEmailException();
+            }
         }
 
         return true;
@@ -151,9 +153,9 @@ final class RaceMonitor
     private function sendEmail($data)
     {
         if (!empty($data)) {
-            Mail::to($this->email)->send(new RaceEmail($data));
+            Mail::to(explode(',', $this->emails))->send(new RaceEmail($data));
 
-            $this->message = 'An email was sent to ' . $this->email;
+            $this->message = 'An email was sent to ' . $this->emails;
 
             return;
         }
