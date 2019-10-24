@@ -10,6 +10,7 @@ namespace Services\RaceMonitor\RaceMonitor;
 use App\BlacklistedRace;
 use App\Exceptions\InvalidRaceEmailException;
 use App\Mail\RaceEmail;
+use Carbon\Carbon;
 use DOMXPath;
 use DOMDocument;
 use Illuminate\Support\Facades\Mail;
@@ -138,6 +139,7 @@ final class RaceMonitor
                     $blacklistedRace->save();
 
                     $formattedData[] = 'Race: ' . $race . '. ATR Index: ' . $atrIndex . '.';
+                    $formattedData[] = 'Sent on ' . Carbon::now()->timezone('Europe/London')->format('h:i:s d M');
                 }
             }
         }
