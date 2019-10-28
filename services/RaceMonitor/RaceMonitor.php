@@ -132,7 +132,7 @@ final class RaceMonitor
             if ($atrIndex > $this->atrMaxNumber) {
                 $blacklistedRace = new BlacklistedRace();
 
-                if (!$blacklistedRace->where('race', '=', $race)->get()->count()) {
+                if (!$blacklistedRace->where('race', '=', $race)->where('atr_index', '=', $atrIndex)->get()->count()) {
                     //adding the race to the blacklist to prevent repetition
                     $blacklistedRace->race = $race;
                     $blacklistedRace->atr_index = $atrIndex;
