@@ -139,7 +139,7 @@ final class RaceMonitor
                     $blacklistedRace->save();
 
                     $formattedData[] = 'Race: ' . $race . '. ATR Index: ' . $atrIndex . '.';
-                    $formattedData[] = 'Sent on ' . Carbon::now()->timezone('Europe/London')->format('h:i:s d M');
+                    $formattedData[] = 'Sent on ' . Carbon::now()->timezone('Europe/London')->format('H:i:s d M');
                 }
             }
         }
